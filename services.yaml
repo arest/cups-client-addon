@@ -1,0 +1,55 @@
+# Service definitions for CUPS Client
+cups_client:
+  print_pdf:
+    name: Print PDF
+    description: Send a PDF to a CUPS printer
+    fields:
+      endpoint:
+        name: PDF Endpoint
+        description: URL of the PDF to print
+        required: true
+        example: http://example.com/document.pdf
+        selector:
+          text: {}
+      printer_name:
+        name: Printer Name
+        description: Name of the printer to use (overrides header and default)
+        required: false
+        example: HP-LaserJet-1020
+        selector:
+          text: {}
+      printer_ip:
+        name: Printer IP
+        description: IP address of the printer (overrides header and default)
+        required: false
+        example: 192.168.1.100
+        selector:
+          text: {}
+      api_key:
+        name: API Key
+        description: Optional API key for the endpoint
+        required: false
+        example: your-api-key
+        selector:
+          text:
+            type: password
+      paper_size:
+        name: Paper Size
+        description: Paper size for printing (default A4)
+        required: false
+        default: A4
+        selector:
+          select:
+            options:
+              - A4
+              - A3
+              - A5
+              - Letter
+              - Legal
+      page_range:
+        name: Page Range
+        description: Pages to print (e.g., '1-5,8,11-13')
+        required: false
+        example: 1-5,8,11-13
+        selector:
+          text: {}

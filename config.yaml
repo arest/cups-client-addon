@@ -1,0 +1,48 @@
+name: "CUPS Client Addon"
+version: "1.0.0"
+slug: "cups_client"
+description: "Service to fetch PDFs and print via CUPS"
+init: false
+arch:
+  - armhf
+  - armv7
+  - aarch64
+  - amd64
+  - i386
+startup: application
+boot: auto
+homeassistant_api: true
+ingress: true
+ingress_port: 8099
+ports:
+  8099/tcp: 8099
+ports_description:
+  8099/tcp: "Print service API port (optional)"
+services:
+  - mqtt:need
+map:
+  - share:rw
+options:
+  cups_server: "localhost"
+  cups_port: 631
+  default_endpoint: "http://localhost:8000/print"
+  default_api_key: ""
+  default_paper_size: "A4"
+  header_names:
+    printer_name: "X-Printer-Name"
+    printer_ip: "X-Printer-IP"
+    printer_port: "X-Printer-Port"
+    job_id: "X-Print-Job-ID"
+    job_type: "X-Printer-Job-Type"
+schema:
+  cups_server: str
+  cups_port: port
+  default_endpoint: str
+  default_api_key: str?
+  default_paper_size: list(A4|A3|A5|Letter|Legal)?
+  header_names:
+    printer_name: str
+    printer_ip: str
+    printer_port: str
+    job_id: str
+    job_type: str
