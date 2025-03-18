@@ -28,6 +28,7 @@ options:
   default_endpoint: "http://localhost:8000/print"
   default_api_key: ""
   default_paper_size: "A4"
+  keep_temp_files: false
   header_names:
     printer_name: "X-Printer-Name"
     printer_ip: "X-Printer-IP"
@@ -40,6 +41,7 @@ schema:
   default_endpoint: str
   default_api_key: str?
   default_paper_size: list(A4|A3|A5|Letter|Legal)?
+  keep_temp_files: bool
   header_names:
     printer_name: str
     printer_ip: str
