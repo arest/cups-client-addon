@@ -118,6 +118,16 @@ class CupsClientService:
             api_key = data.get('api_key', self.config.get('default_api_key', ''))
             _LOGGER.debug("Using endpoint: %s", endpoint)
 
+            # Get print parameters from request data first, then fall back to other sources
+            printer_name = data.get('printer_name', None)
+            page_range = data.get('page_range', None)
+            paper_size = data.get('paper_size', None)
+
+            _LOGGER.debug("Print parameters from request data - Printer: %s, Page Range: %s, Paper Size: %s",
+                         printer_name or 'Not specified',
+                         page_range or 'Not specified',
+                         paper_size or 'Not specified')
+
             # Prepare headers for the PDF request
             headers = {}
             if api_key:
@@ -164,11 +174,11 @@ class CupsClientService:
                 }, status=500)
 
             # Extract printer information and print settings from headers using customizable header names
-            printer_name = None
-            if 'printer_name' in self.headers:
+            # Only use header values if not already set from request data
+            if not printer_name and 'printer_name' in self.headers:
                 printer_name = response.headers.get(self.headers['printer_name'])
             if not printer_name:
-                printer_name = data.get('printer_name') or self.default_printer
+                printer_name = self.default_printer
 
             printer_ip = None
             if 'printer_ip' in self.headers:
@@ -192,22 +202,17 @@ class CupsClientService:
                 if type_from_header:
                     job_type = type_from_header
 
-            # Get paper size and page range from headers, fallback to request data or defaults
-            paper_size = None
-            if 'paper_size' in self.headers:
+            # Only use header values for paper size and page range if not already set from request data
+            if not paper_size and 'paper_size' in self.headers:
                 paper_size = response.headers.get(self.headers['paper_size'])
-
             if not paper_size:
-                paper_size = data.get('paper_size') or self.config.get('default_paper_size', 'A4')
+                paper_size = self.config.get('default_paper_size', 'A4')
 
-            page_range = None
-            if 'page_range' in self.headers:
+            if not page_range and 'page_range' in self.headers:
                 page_range = response.headers.get(self.headers['page_range'])
+            # No default for page_range as empty means print all pages
 
-            if not page_range:
-                page_range = data.get('page_range') or ''
-
-            _LOGGER.debug("Print parameters - Printer: %s, IP: %s, Port: %s, Job ID: %s, Paper: %s, Range: %s",
+            _LOGGER.debug("Final print parameters - Printer: %s, IP: %s, Port: %s, Job ID: %s, Paper: %s, Range: %s",
                          printer_name, printer_ip, printer_port, job_id, paper_size, page_range or "all")
 
             if not printer_name:

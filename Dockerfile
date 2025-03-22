@@ -19,7 +19,6 @@ RUN mkdir -p /app/services
 WORKDIR /app
 COPY run.py /app/
 COPY requirements.txt /app/
-COPY services.yaml /app/
 
 # Install Python dependencies
 RUN pip3 install -r requirements.txt
