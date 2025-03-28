@@ -260,7 +260,10 @@ class CupsClientService:
 
                 # Add page ranges if specified
                 if page_range:
+                    # Convert to string if it's a number
+                    page_range = str(page_range)
                     print_options['page-ranges'] = page_range
+                    _LOGGER.debug("Added page range to print options: %s", page_range)
 
                 _LOGGER.debug("Print options: %s", print_options)
 
@@ -450,15 +453,33 @@ class CupsClientService:
 
             try:
                 _LOGGER.debug("Sending notification to Home Assistant")
+
+                # Check if we have a notification entity configured
+                notification_entity = self.config.get('notification_entity')
+
+                if notification_entity:
+                    # Use the configured notification entity
+                    service_data = {
+                        "target": notification_entity,
+                        "message": message,
+                        "title": "CUPS Print Service"
+                    }
+                    endpoint = "http://supervisor/core/api/services/notify/notify"
+                else:
+                    # Fall back to persistent notification
+                    service_data = notification
+                    endpoint = "http://supervisor/core/api/services/persistent_notification/create"
+
                 async with session.post(
-                    "http://supervisor/core/api/services/persistent_notification/create",
+                    endpoint,
                     headers=headers,
-                    json=notification
+                    json=service_data
                 ) as response:
                     if response.status != 200:
                         _LOGGER.error("Failed to send notification: %s", await response.text())
                     else:
-                        _LOGGER.debug("Notification sent successfully")
+                        _LOGGER.debug("Notification sent successfully via %s",
+                                    "notification entity" if notification_entity else "persistent notification")
             except Exception as e:
                 _LOGGER.error("Error sending notification: %s", str(e))
                 _LOGGER.debug(traceback.format_exc())

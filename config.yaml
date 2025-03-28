@@ -1,5 +1,5 @@
 name: "CUPS Client Addon"
-version: "1.0.0"
+version: "2.0.1"
 slug: "cups_client"
 description: "Service to fetch PDFs and print via CUPS"
 init: false
@@ -28,7 +28,10 @@ options:
   default_endpoint: "http://localhost:8000/print"
   default_api_key: ""
   default_paper_size: "A4"
+  default_printer: "Epson"
+  default_printer_ip: "192.168.1.217"
   keep_temp_files: false
+  notification_entity: ""
   header_names:
     printer_name: "X-Printer-Name"
     printer_ip: "X-Printer-IP"
@@ -41,7 +44,10 @@ schema:
   default_endpoint: str
   default_api_key: str?
   default_paper_size: list(A4|A3|A5|Letter|Legal)?
+  default_printer: str
+  default_printer_ip: str
   keep_temp_files: bool
+  notification_entity: str?
   header_names:
     printer_name: str
     printer_ip: str
